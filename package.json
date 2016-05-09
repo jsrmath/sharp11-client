@@ -1,0 +1,21 @@
+{
+  "name": "sharp11-client",
+  "version": "1.0.0",
+  "description": "A web front-end interface for exploring the Sharp11 library",
+  "author": "Julian Rosenblum <jsrmath@gmail.com>",
+  "license": "BSD-2-Clause",
+  "devDependencies": {
+    "browserify": "^13.0.1",
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-streamify": "^1.0.2",
+    "gulp-uglify": "^1.5.3",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "dependencies": {
+    "sharp11": "^1.0.0",
+    "underscore": "^1.8.3",
+    "webaudio-buffer-loader": "^1.0.1"
+  }
+}
