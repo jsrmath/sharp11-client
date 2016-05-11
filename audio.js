@@ -52,7 +52,7 @@ module.exports.init = function (func) {
         });
       }
       else { // Assume note
-        playNote(s11.note.create(obj));
+        playNote(s11.note.create(obj), start, duration);
       }
     };
 
