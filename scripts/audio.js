@@ -4,10 +4,10 @@ var loadBuffers = require('webaudio-buffer-loader');
 
 var pianoSoundfont;
 if (new Audio().canPlayType('audio/ogg') !== '') {
-  pianoSoundfont = require('./soundfonts/acoustic_grand_piano-ogg');
+  pianoSoundfont = require('../soundfonts/acoustic_grand_piano-ogg');
 }
 else {
-  pianoSoundfont = require('./soundfonts/acoustic_grand_piano-mp3');
+  pianoSoundfont = require('../soundfonts/acoustic_grand_piano-mp3');
 }
 
 var scaleDelay = .5;
@@ -29,12 +29,14 @@ module.exports.init = function (func) {
       return buffers[_.indexOf(_.keys(pianoSoundfont), note.fullName)];
     };
 
-    var playNote = function (note, start, duration) {
+    var playNote = function (note, start, end) {
       var src = ctx.createBufferSource();
+      var gainNode = ctx.createGain();
+
       src.buffer = getBuffer(note);
       src.connect(ctx.destination);
       src.start(start);
-      src.stop(duration);
+      src.stop(end);
     };
 
     var play = function (obj, start, duration) {

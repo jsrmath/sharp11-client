@@ -1,13 +1,15 @@
 var s11 = require('sharp11');
 var _ = require('underscore');
 var audio = require('./audio');
+var React = require('react');
+var ReactDOM = require('react-dom');
 
 audio.init(function (play) {
   var playImprovChart = function (chart, settings) {
     settings = _.defaults(settings || {}, {
       tempo: 120, // BPM
       swingRatio: 1.5, // How much longer first eighth note is than second
-      chordOctave: 4
+      chordOctave: 3
     });
 
     // Play chords
@@ -32,7 +34,14 @@ audio.init(function (play) {
     }, 0);
   };
 
-  var myFunnyValentine = require('./node_modules/sharp11/sample/charts').myFunnyValentineFull;
-  var imp = s11.improv.create({dissonance: 0}).over('chart', myFunnyValentine);
-  playImprovChart(imp);
+  ReactDOM.render(
+    <h1>Hello, world!</h1>,
+    document.getElementById('content')
+  );
+
+  foo();
+
+  // var chart = require('../node_modules/sharp11/sample/charts').myFunnyValentineFull;
+  // var imp = s11.improv.create({dissonance: 0}).over('chart', chart);
+  // playImprovChart(imp);
 });
