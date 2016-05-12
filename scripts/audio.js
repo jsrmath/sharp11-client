@@ -39,7 +39,7 @@ module.exports.init = function (func) {
       src.stop(end);
     };
 
-    var play = function (obj, start, duration) {
+    var play = function (obj, start, duration, callback) {
       start = ctx.currentTime + (start || 0);
       duration = ctx.currentTime + start + (duration || defaultDuration);
 
@@ -56,6 +56,8 @@ module.exports.init = function (func) {
       else { // Assume note
         playNote(s11.note.create(obj), start, duration);
       }
+
+      if (callback) callback(obj);
     };
 
     func(play);

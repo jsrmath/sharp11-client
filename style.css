@@ -1,0 +1,40 @@
+.pianoKey {
+  margin: 0;
+  padding: 0;
+  display: inline-block; /* for modern browsers */    
+  display: -moz-inline-stack; /* for FF 2 */
+  zoom: 1; /* for IE, triggers hasLayout */
+  *display: inline; /* IE 7 and below */
+  cursor: pointer;
+}
+.whiteKey {
+  height: 120px;
+  width: 40px;
+  border: solid 1px black;
+  border-right: none;
+}
+.whiteKey:last-child {
+  border-right: solid 1px black;
+}
+.blackKey {
+  background-color: black;
+  color: white;
+  height: 75px;
+  width: 30px;
+  position: absolute;
+  margin-left: -15px;
+}
+.pianoKey div {
+  text-align: center;
+  height: 30px;
+  padding-top: 7.5px;
+}
+.whiteKey div {
+  margin-top: 82.5px;  
+}
+.blackKey div {
+  margin-top: 37.5px;    
+}
+.pressed {
+  color: red;
+}
