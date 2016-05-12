@@ -22,7 +22,7 @@ module.exports = React.createClass({
   },
 
   // Given a sharp11 object, turn its corresponding keys on and all others off
-  showObjKeys: function (obj, note) {
+  playObj: function (obj, note) {
     var notes = [note];
 
     // If the object we're displaying is a chord, we have to show all the notes at once
@@ -50,13 +50,13 @@ module.exports = React.createClass({
 
   playChord: function (chord) {
     chord = chord.inOctave(this.props.chordOctave);
-    this.props.play(chord, null, null, this.showObjKeys);
+    this.props.play(chord, null, null, this.playObj);
   },
 
   playScale: function (scale) {
-    scale = scale.traverse(s11.note.create(scale.root, this.props.chordOctave)).scale; // Clean up
+    scale = scale.traverse(s11.note.create(scale.root, this.props.chordOctave)).scale; // TODO: implement .inOctave
     console.log(scale);
-    this.props.play(scale, null, null, this.showObjKeys);
+    this.props.play(scale, null, null, this.playObj);
   },
 
   playImprov: function (chart, settings) {
@@ -87,7 +87,7 @@ module.exports = React.createClass({
       var noteLength = noteTicks / ticksPerBeat / settings.tempo * 60;
 
       if (note.note) {
-        that.props.play(note.note, currentTime, noteLength, that.showObjKeys);
+        that.props.play(note.note, currentTime, noteLength, that.playObj);
       }
 
       return currentTime + noteLength;
@@ -121,6 +121,7 @@ module.exports = React.createClass({
         <button onClick={this.playChord.bind(this, s11.chord.create('Fsus7'))}>Play Chord</button>
         <button onClick={this.playScale.bind(this, s11.scale.create('D', 'Dorian'))}>Play Scale</button>
         <button onClick={this.playImprov.bind(this, chart)}>Play Improv</button>
+        <button onClick={this.props.stop}>Stop</button>
       </div>
     );
   }

@@ -22,6 +22,9 @@ clock.start();
 
 module.exports.init = function (func) {
   loadBuffers(_.values(pianoSoundfont), ctx, function(err, buffers) {
+    var sources = [];
+    var events = [];
+
     if (err) alert(err);
 
     var getBuffer = function (note) {
@@ -39,7 +42,11 @@ module.exports.init = function (func) {
       src.buffer = getBuffer(note);
       src.connect(ctx.destination);
       src.start(start, 0, duration);
-      if (callback) clock.callbackAtTime(_.partial(callback, note), start);
+      sources.push(src);
+
+      if (callback) {
+        events.push(clock.callbackAtTime(_.partial(callback, note), start));
+      }
     };
 
     var play = function (obj, start, duration, callback) {
@@ -63,6 +70,12 @@ module.exports.init = function (func) {
       }
     };
 
-    func(play);
+    var stop = function () {
+      _.invoke(sources, 'stop');
+      _.invoke(events, 'clear');
+      sources = events = [];
+    };
+
+    func(play, pause, stop);
   });
 };

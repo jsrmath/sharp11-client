@@ -5,11 +5,12 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var Piano = require('./Piano.jsx');
 
-audio.init(function (play) {
+audio.init(function (play, stop) {
   ReactDOM.render(
     <Piano
       range={[s11.note.create('C3'), s11.note.create('C6')]}
       play={play}
+      stop={stop}
       chordOctave={4} />,
     document.getElementById('content')
   );
