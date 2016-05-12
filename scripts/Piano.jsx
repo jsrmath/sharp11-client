@@ -22,11 +22,13 @@ module.exports = React.createClass({
   },
 
   // Given a sharp11 object, turn its corresponding keys on and all others off
-  showObjKeys: function (obj) {
-    var notes;
+  showObjKeys: function (obj, note) {
+    var notes = [note];
 
-    if (s11.chord.isChord(obj)) notes = obj.chord;
-    if (s11.note.isNote(obj)) notes = [obj];
+    // If the object we're displaying is a chord, we have to show all the notes at once
+    if (s11.chord.isChord(obj)) {
+      notes = obj.chord;
+    }
 
     this.setState({pressedKeys: _.map(notes, this.noteValue)});
   },
@@ -48,7 +50,13 @@ module.exports = React.createClass({
 
   playChord: function (chord) {
     chord = chord.inOctave(this.props.chordOctave);
-    this.props.play(chord, null, null, this.showObjKeys.bind(this, chord));
+    this.props.play(chord, null, null, this.showObjKeys);
+  },
+
+  playScale: function (scale) {
+    scale = scale.traverse(s11.note.create(scale.root, this.props.chordOctave)).scale; // Clean up
+    console.log(scale);
+    this.props.play(scale, null, null, this.showObjKeys);
   },
 
   playImprov: function (chart, settings) {
@@ -79,7 +87,7 @@ module.exports = React.createClass({
       var noteLength = noteTicks / ticksPerBeat / settings.tempo * 60;
 
       if (note.note) {
-        that.props.play(note.note, currentTime, noteLength, that.showObjKeys.bind(that, note.note));
+        that.props.play(note.note, currentTime, noteLength, that.showObjKeys);
       }
 
       return currentTime + noteLength;
@@ -111,6 +119,7 @@ module.exports = React.createClass({
         <button onClick={this.toggleAccidentals}>Toggle Accidentals</button>
         <button onClick={this.clearPiano}>Clear Piano</button>
         <button onClick={this.playChord.bind(this, s11.chord.create('Fsus7'))}>Play Chord</button>
+        <button onClick={this.playScale.bind(this, s11.scale.create('D', 'Dorian'))}>Play Scale</button>
         <button onClick={this.playImprov.bind(this, chart)}>Play Improv</button>
       </div>
     );

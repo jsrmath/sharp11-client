@@ -39,12 +39,14 @@ module.exports.init = function (func) {
       src.buffer = getBuffer(note);
       src.connect(ctx.destination);
       src.start(start, 0, duration);
-      if (callback) clock.callbackAtTime(callback, start);
+      if (callback) clock.callbackAtTime(_.partial(callback, note), start);
     };
 
     var play = function (obj, start, duration, callback) {
       start = ctx.currentTime + (start || 0);
       duration = duration || defaultDuration;
+
+      if (callback) callback = _.partial(callback, obj);
 
       if (s11.chord.isChord(obj)) {
         _.each(obj.chord, function (note) {
@@ -53,7 +55,7 @@ module.exports.init = function (func) {
       }
       else if (s11.scale.isScale(obj)) {
         _.each(obj.scale, function (note, i) {
-          playNote(note, start + i * scaleDelay, duration + i * scaleDelay, callback);
+          playNote(note, start + i * scaleDelay, duration, callback);
         });
       }
       else { // Assume note
