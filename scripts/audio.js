@@ -61,7 +61,7 @@ module.exports.init = function (func) {
         });
       }
       else if (s11.scale.isScale(obj)) {
-        _.each(obj.scale, function (note, i) {
+        _.each(obj.scale.concat(obj.root.transpose('P8')), function (note, i) {
           playNote(note, start + i * scaleDelay, duration, callback);
         });
       }
@@ -76,6 +76,6 @@ module.exports.init = function (func) {
       sources = events = [];
     };
 
-    func(play, pause, stop);
+    func(play, stop);
   });
 };

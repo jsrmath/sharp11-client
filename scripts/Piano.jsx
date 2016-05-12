@@ -22,6 +22,7 @@ module.exports = React.createClass({
   },
 
   // Given a sharp11 object, turn its corresponding keys on and all others off
+  // Used as callback for play function
   playObj: function (obj, note) {
     var notes = [note];
 

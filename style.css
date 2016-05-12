@@ -35,6 +35,9 @@
 .blackKey div {
   margin-top: 37.5px;    
 }
-.pressed {
-  color: red;
+.blackKey.pressed {
+  background-color: #666;
+}
+.whiteKey.pressed {
+  background-color: #CCC;
 }
