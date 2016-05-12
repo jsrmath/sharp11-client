@@ -1,6 +1,7 @@
 var s11 = require('sharp11');
 var _ = require('underscore');
 var loadBuffers = require('webaudio-buffer-loader');
+var WAAClock = require('waaclock');
 
 var pianoSoundfont;
 if (new Audio().canPlayType('audio/ogg') !== '') {
@@ -16,6 +17,8 @@ var defaultDuration = .3;
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 var ctx = new AudioContext();
+var clock = new WAAClock(ctx);
+clock.start();
 
 module.exports.init = function (func) {
   loadBuffers(_.values(pianoSoundfont), ctx, function(err, buffers) {
@@ -29,35 +32,33 @@ module.exports.init = function (func) {
       return buffers[_.indexOf(_.keys(pianoSoundfont), note.fullName)];
     };
 
-    var playNote = function (note, start, end) {
+    var playNote = function (note, start, duration, callback) {
       var src = ctx.createBufferSource();
       var gainNode = ctx.createGain();
 
       src.buffer = getBuffer(note);
       src.connect(ctx.destination);
-      src.start(start);
-      src.stop(end);
+      src.start(start, 0, duration);
+      if (callback) clock.callbackAtTime(callback, start);
     };
 
     var play = function (obj, start, duration, callback) {
       start = ctx.currentTime + (start || 0);
-      duration = ctx.currentTime + start + (duration || defaultDuration);
+      duration = duration || defaultDuration;
 
       if (s11.chord.isChord(obj)) {
         _.each(obj.chord, function (note) {
-          playNote(note, start, duration);
+          playNote(note, start, duration, callback);
         });
       }
       else if (s11.scale.isScale(obj)) {
         _.each(obj.scale, function (note, i) {
-          playNote(note, start + i * scaleDelay, duration + i * scaleDelay);
+          playNote(note, start + i * scaleDelay, duration + i * scaleDelay, callback);
         });
       }
       else { // Assume note
-        playNote(s11.note.create(obj), start, duration);
+        playNote(s11.note.create(obj), start, duration, callback);
       }
-
-      if (callback) callback(obj);
     };
 
     func(play);

@@ -18,6 +18,7 @@
     "react-dom": "^15.0.2",
     "sharp11": "^1.0.1",
     "underscore": "^1.8.3",
+    "waaclock": "^0.5.3",
     "webaudio-buffer-loader": "^1.0.1"
   }
 }
