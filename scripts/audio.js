@@ -65,6 +65,11 @@ module.exports.init = function (func) {
           playNote(note, start + i * scaleDelay, duration, callback);
         });
       }
+      else if (obj instanceof Array) {
+        _.each(obj, function (note) {
+          playNote(note, start, duration, callback);
+        });
+      }
       else { // Assume note
         playNote(s11.note.create(obj), start, duration, callback);
       }

@@ -13,6 +13,21 @@ module.exports = React.createClass({
     };
   },
 
+  pressedNotes: function () {
+    var that = this;
+
+    return _.map(this.state.pressedKeys, function (value) {
+      var octave = Math.floor(value / 12);
+      var note = s11.note.create('C', octave).shift(value % 12).clean();
+
+      if (that.state.acc !== note.acc) {
+        note = note.toggleAccidental();
+      }
+
+      return note;
+    });
+  },
+
   noteValue: function (note) {
     return s11.midi.noteValue(note);
   },
@@ -26,9 +41,12 @@ module.exports = React.createClass({
   playObj: function (obj, note) {
     var notes = [note];
 
-    // If the object we're displaying is a chord, we have to show all the notes at once
+    // If the object we're displaying is a chord or an array, show all the notes at once
     if (s11.chord.isChord(obj)) {
       notes = obj.chord;
+    }
+    if (obj instanceof Array) {
+      notes = obj;
     }
 
     this.setState({pressedKeys: _.map(notes, this.noteValue)});
@@ -47,6 +65,11 @@ module.exports = React.createClass({
 
   clearPiano: function () {
     this.setState({pressedKeys: []});
+  },
+
+  transpose: function (interval) {
+    var notes = _.invoke(this.pressedNotes(), 'transpose', interval);
+    this.props.play(notes, null, null, this.playObj);
   },
 
   playChord: function (chord) {
@@ -122,6 +145,7 @@ module.exports = React.createClass({
         <button onClick={this.playChord.bind(this, s11.chord.create('Fsus7'))}>Play Chord</button>
         <button onClick={this.playScale.bind(this, s11.scale.create('D', 'Dorian'))}>Play Scale</button>
         <button onClick={this.playImprov.bind(this, chart)}>Play Improv</button>
+        <button onClick={this.transpose.bind(this, 'aug4')}>Transpose</button>
         <button onClick={this.props.stop}>Stop</button>
       </div>
     );
