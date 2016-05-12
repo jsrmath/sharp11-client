@@ -15,8 +15,8 @@ module.exports = React.createClass({
 
   pressedNotes: function () {
     var that = this;
-
-    return _.map(this.state.pressedKeys, function (value) {
+    
+    return _.map(_.sortBy(this.state.pressedKeys), function (value) {
       var octave = Math.floor(value / 12);
       var note = s11.note.create('C', octave).shift(value % 12).clean();
 
@@ -79,7 +79,6 @@ module.exports = React.createClass({
 
   playScale: function (scale) {
     scale = scale.traverse(s11.note.create(scale.root, this.props.chordOctave)).scale; // TODO: implement .inOctave
-    console.log(scale);
     this.props.play(scale, null, null, this.playObj);
   },
 
@@ -118,6 +117,20 @@ module.exports = React.createClass({
     }, 0);
   },
 
+  identify: function () {
+    var notes = this.pressedNotes();
+
+    if (notes.length < 2) {
+      return '';
+    }
+    else if (notes.length === 2) {
+      return notes[0].getInterval(notes[1]).toString();
+    }
+    else {
+      return s11.chord.identify.apply(this, notes);
+    }
+  },
+
   render: function () {
     var pianoKeys = [];
     var note = this.props.range[0];
@@ -146,6 +159,7 @@ module.exports = React.createClass({
         <button onClick={this.playScale.bind(this, s11.scale.create('D', 'Dorian'))}>Play Scale</button>
         <button onClick={this.playImprov.bind(this, chart)}>Play Improv</button>
         <button onClick={this.transpose.bind(this, 'aug4')}>Transpose</button>
+        <div>{this.identify()}</div>
         <button onClick={this.props.stop}>Stop</button>
       </div>
     );
