@@ -14,8 +14,4 @@ audio.init(function (play, stop) {
       chordOctave={4} />,
     document.getElementById('content')
   );
-
-  // var chart = require('../node_modules/sharp11/sample/charts').myFunnyValentineFull;
-  // var imp = s11.improv.create({dissonance: 0}).over('chart', chart);
-  // playImprovChart(imp);
 });

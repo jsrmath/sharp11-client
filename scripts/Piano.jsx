@@ -3,8 +3,9 @@ var S = require('string');
 var s11 = require('sharp11');
 var React = require('react');
 var PianoKey = require('./PianoKey.jsx');
-
-var chart = s11.improv.create({dissonance: 0}).over('chart', require('../node_modules/sharp11/sample/charts').myFunnyValentineFull);
+var PianoControls = require('./PianoControls.jsx');
+var Theorizer = require('./Theorizer.jsx');
+var Improviser = require('./Improviser.jsx');
 
 module.exports = React.createClass({
   getInitialState: function () {
@@ -130,6 +131,10 @@ module.exports = React.createClass({
     }
   },
 
+  display: function () {
+    return this.identify() || this.state.improv;
+  },
+
   handleInput: function (e) {
     this.setState({value: S(e.target.value).trim().s});
   },
@@ -157,7 +162,6 @@ module.exports = React.createClass({
     this.clearPiano();
     this.props.stop();
     this.setState({improv: ''});
-    this.refs.input.value = '';
   },
 
   render: function () {
@@ -181,13 +185,14 @@ module.exports = React.createClass({
 
     return (
       <div>
-        <div className="piano">{pianoKeys}</div>
-        <button onClick={this.toggleAccidentals}>(# &harr; b)</button>
-        <input ref="input" type="text" onChange={this.handleInput} placeholder="Enter a chord, scale, or interval" />
-        <button onClick={this.play}>Play</button>
-        <button onClick={this.stop}>Stop</button>
-        <button onClick={this.playImprov.bind(this, chart)}>Improvise</button>
-        <div>{this.identify() || this.state.improv}</div>
+        <div className="row col-md-12">
+          <div>{pianoKeys}</div>
+          <PianoControls display={this.display} toggleAccidentals={this.toggleAccidentals} stop={this.stop} />
+        </div>
+        <div className="row">
+          <Theorizer play={this.play} handleInput={this.handleInput} />
+          <Improviser playImprov={this.playImprov} />
+        </div>
       </div>
     );
   }
