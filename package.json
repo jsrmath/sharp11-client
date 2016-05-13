@@ -4,6 +4,10 @@
   "description": "A web front-end interface for exploring the Sharp11 library",
   "author": "Julian Rosenblum <jsrmath@gmail.com>",
   "license": "BSD-2-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jsrmath/sharp11-client.git"
+  },
   "devDependencies": {
     "babel-preset-react": "^6.5.0",
     "babelify": "^7.3.0",
@@ -19,6 +23,7 @@
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
     "sharp11": "^1.1.0",
+    "string": "^3.3.1",
     "underscore": "^1.8.3",
     "waaclock": "^0.5.3"
   }

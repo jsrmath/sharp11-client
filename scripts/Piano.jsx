@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var S = require('string');
 var s11 = require('sharp11');
 var React = require('react');
 var PianoKey = require('./PianoKey.jsx');
@@ -10,15 +11,15 @@ module.exports = React.createClass({
     return {
       acc: 'b',
       pressedKeys: [],
+      value: '',
+      improv: ''
     };
   },
 
-  pressedNotes: function () {
-    var that = this;
-    
+  pressedNotes: function () {    
     return _.map(_.sortBy(this.state.pressedKeys), function (value) {
-      return s11.note.fromValue(value).withAccidental(that.state.acc);
-    });
+      return s11.note.fromValue(value).withAccidental(this.state.acc);
+    }, this);
   },
 
   toggleAccidentals: function () {
@@ -27,7 +28,7 @@ module.exports = React.createClass({
 
   // Given a sharp11 object, turn its corresponding keys on and all others off
   // Used as callback for play function
-  playObj: function (obj, note) {
+  showObjOnPiano: function (obj, note) {
     var notes = [note];
 
     // If the object we're displaying is a chord or an array, show all the notes at once
@@ -58,21 +59,24 @@ module.exports = React.createClass({
 
   transpose: function (interval) {
     var notes = _.invoke(this.pressedNotes(), 'transpose', interval);
-    this.props.play(notes, null, null, this.playObj);
+    this.props.play(notes, null, null, this.showObjOnPiano);
   },
 
   playChord: function (chord) {
-    chord = chord.inOctave(this.props.chordOctave);
-    this.props.play(chord, null, null, this.playObj);
+    chord = s11.chord.create(chord, this.props.chordOctave);
+    this.props.play(chord, null, null, this.showObjOnPiano);
   },
 
   playScale: function (scale) {
-    scale = scale.inOctave(this.props.chordOctave);
-    this.props.play(scale, null, null, this.playObj);
+    var root = scale.split(' ')[0];
+    var scaleName = _.rest(scale.split(' ')).join(' ');
+    
+    scale = s11.scale.create(root, scaleName).inOctave(this.props.chordOctave);
+    this.props.play(scale, null, null, this.showObjOnPiano);
   },
 
   playImprov: function (chart, settings) {
-    var that = this;
+    var piano = this;
 
     settings = _.defaults(settings || {}, {
       tempo: 120, // BPM
@@ -80,12 +84,18 @@ module.exports = React.createClass({
       chordOctave: 3
     });
 
-    that.clearPiano();
+    this.clearPiano();
 
     // Play chords
     _.reduce(chart.chart, function (currentTime, change) {
       var changeLength = change.notes.length / settings.tempo * 60;
-      that.props.play(change.chord.inOctave(settings.chordOctave), currentTime, changeLength);
+      var chord = change.chord.inOctave(settings.chordOctave);
+      var changeStr = change.chord.name + ' \u2192 ' + change.scale.name;
+
+      piano.props.play(chord, currentTime, changeLength, function () {
+        piano.setState({improv: changeStr});
+      });
+
       return currentTime + changeLength;
     }, 0);
 
@@ -99,7 +109,7 @@ module.exports = React.createClass({
       var noteLength = noteTicks / ticksPerBeat / settings.tempo * 60;
 
       if (note.note) {
-        that.props.play(note.note, currentTime, noteLength, that.playObj);
+        piano.props.play(note.note, currentTime, noteLength, piano.showObjOnPiano);
       }
 
       return currentTime + noteLength;
@@ -118,6 +128,36 @@ module.exports = React.createClass({
     else {
       return s11.chord.identify.apply(this, notes);
     }
+  },
+
+  handleInput: function (e) {
+    this.setState({value: S(e.target.value).trim().s});
+  },
+
+  play: function () {
+    var value = this.state.value;
+
+    // Scale
+    if (S(value).contains(' ')) {
+      this.playScale(value);
+    }
+
+    // Interval
+    else if (/^(m|p|dim|aug)/i.test(value)) {
+      this.transpose(value);
+    }
+
+    // Chord
+    else if (/^[a-g]/i.test(value)) {
+      this.playChord(value);
+    }
+  },
+
+  stop: function () {
+    this.clearPiano();
+    this.props.stop();
+    this.setState({improv: ''});
+    this.refs.input.value = '';
   },
 
   render: function () {
@@ -142,14 +182,12 @@ module.exports = React.createClass({
     return (
       <div>
         <div className="piano">{pianoKeys}</div>
-        <button onClick={this.toggleAccidentals}>Toggle Accidentals</button>
-        <button onClick={this.clearPiano}>Clear Piano</button>
-        <button onClick={this.playChord.bind(this, s11.chord.create('Fsus7'))}>Play Chord</button>
-        <button onClick={this.playScale.bind(this, s11.scale.create('D', 'Dorian'))}>Play Scale</button>
-        <button onClick={this.playImprov.bind(this, chart)}>Play Improv</button>
-        <button onClick={this.transpose.bind(this, 'aug4')}>Transpose</button>
-        <div>{this.identify()}</div>
-        <button onClick={this.props.stop}>Stop</button>
+        <button onClick={this.toggleAccidentals}>(# &harr; b)</button>
+        <input ref="input" type="text" onChange={this.handleInput} placeholder="Enter a chord, scale, or interval" />
+        <button onClick={this.play}>Play</button>
+        <button onClick={this.stop}>Stop</button>
+        <button onClick={this.playImprov.bind(this, chart)}>Improvise</button>
+        <div>{this.identify() || this.state.improv}</div>
       </div>
     );
   }
