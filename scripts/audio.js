@@ -1,7 +1,8 @@
 var s11 = require('sharp11');
 var _ = require('underscore');
-var loadBuffers = require('webaudio-buffer-loader');
 var WAAClock = require('waaclock');
+var base64 = require('base64-arraybuffer');
+var async = require('async');
 
 var pianoSoundfont;
 if (new Audio().canPlayType('audio/ogg') !== '') {
@@ -21,7 +22,18 @@ var clock = new WAAClock(ctx);
 clock.start();
 
 module.exports.init = function (func) {
-  loadBuffers(_.values(pianoSoundfont), ctx, function(err, buffers) {
+  var buffers = {};
+
+  var loadBuffer = function (note, callback) {
+    ctx.decodeAudioData(base64.decode(pianoSoundfont[note]), function(buffer) {
+      buffers[note] = buffer;
+      callback();
+    }, function(err) {
+      callback(err);
+    });
+  };
+
+  async.each(_.keys(pianoSoundfont), loadBuffer, function (err) {
     var sources = [];
     var events = [];
 
@@ -31,8 +43,7 @@ module.exports.init = function (func) {
       note = note.clean();
       if (note.acc === '#') note = note.toggleAccidental(); // Note names are all flats
 
-      // The soundfont is an object indexed by note, but converted to an array to load buffers
-      return buffers[_.indexOf(_.keys(pianoSoundfont), note.fullName)];
+      return buffers[note.fullName];
     };
 
     var playNote = function (note, start, duration, callback) {

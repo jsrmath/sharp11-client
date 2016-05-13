@@ -16,7 +16,7 @@ module.exports = React.createClass({
   pressedNotes: function () {
     var that = this;
     
-    return _.map(_.sortBy(this.state.pressedKeys), function (value) {
+    return _.map(_.sortBy(this.state.pressedKeys), function (value) { // TODO: Implement note.fromValue
       var octave = Math.floor(value / 12);
       var note = s11.note.create('C', octave).shift(value % 12).clean();
 

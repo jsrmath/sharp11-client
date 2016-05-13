@@ -13,12 +13,13 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "dependencies": {
+    "async": "^1.5.2",
+    "base64-arraybuffer": "^0.1.5",
     "classnames": "^2.2.5",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
     "sharp11": "^1.0.1",
     "underscore": "^1.8.3",
-    "waaclock": "^0.5.3",
-    "webaudio-buffer-loader": "^1.0.1"
+    "waaclock": "^0.5.3"
   }
 }
