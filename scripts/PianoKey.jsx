@@ -4,12 +4,7 @@ var classNames = require('classnames');
 
 module.exports = React.createClass({
   note: function () {
-    var note = this.props.note.clean();
-    if (this.props.acc !== this.props.note.acc) {
-      note = note.toggleAccidental();
-    }
-
-    return note;
+    return this.props.note.clean().withAccidental(this.props.acc);
   },
 
   keyColor: function () {

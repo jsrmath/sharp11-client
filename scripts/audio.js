@@ -40,10 +40,7 @@ module.exports.init = function (func) {
     if (err) alert(err);
 
     var getBuffer = function (note) {
-      note = note.clean();
-      if (note.acc === '#') note = note.toggleAccidental(); // Note names are all flats
-
-      return buffers[note.fullName];
+      return buffers[note.clean().withAccidental('b').fullName];
     };
 
     var playNote = function (note, start, duration, callback) {

@@ -16,20 +16,9 @@ module.exports = React.createClass({
   pressedNotes: function () {
     var that = this;
     
-    return _.map(_.sortBy(this.state.pressedKeys), function (value) { // TODO: Implement note.fromValue
-      var octave = Math.floor(value / 12);
-      var note = s11.note.create('C', octave).shift(value % 12).clean();
-
-      if (that.state.acc !== note.acc) {
-        note = note.toggleAccidental();
-      }
-
-      return note;
+    return _.map(_.sortBy(this.state.pressedKeys), function (value) {
+      return s11.note.fromValue(value).withAccidental(that.state.acc);
     });
-  },
-
-  noteValue: function (note) {
-    return s11.midi.noteValue(note);
   },
 
   toggleAccidentals: function () {
@@ -49,11 +38,11 @@ module.exports = React.createClass({
       notes = obj;
     }
 
-    this.setState({pressedKeys: _.map(notes, this.noteValue)});
+    this.setState({pressedKeys: _.invoke(notes, 'value')});
   },
 
   pressKey: function (note) {
-    var key = this.noteValue(note);
+    var key = note.value();
     if (_.contains(this.state.pressedKeys, key)) {
       this.setState({pressedKeys: _.without(this.state.pressedKeys, key)});
     }
@@ -78,7 +67,7 @@ module.exports = React.createClass({
   },
 
   playScale: function (scale) {
-    scale = scale.traverse(s11.note.create(scale.root, this.props.chordOctave)).scale; // TODO: implement .inOctave
+    scale = scale.inOctave(this.props.chordOctave);
     this.props.play(scale, null, null, this.playObj);
   },
 
@@ -137,7 +126,7 @@ module.exports = React.createClass({
     var key;
 
     while (note.inRange(this.props.range)) {
-      key = s11.midi.noteValue(note);
+      key = note.value();
 
       pianoKeys.push(<PianoKey
         note={note}
