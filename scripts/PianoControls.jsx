@@ -9,7 +9,7 @@ module.exports = React.createClass({
           <Button handleClick={this.props.toggleAccidentals} text="# &harr; b" />
           <Button handleClick={this.props.stop} text="Clear" />
         </div>
-        <div className="display">{this.props.display()}</div>
+        <span className="display">{this.props.display()}</span>
       </div>
     );
   }
