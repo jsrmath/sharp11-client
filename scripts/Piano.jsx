@@ -85,7 +85,7 @@ module.exports = React.createClass({
       chordOctave: 3
     });
 
-    this.clearPiano();
+    this.stop();
 
     // Play chords
     _.reduce(chart.chart, function (currentTime, change) {
@@ -191,7 +191,7 @@ module.exports = React.createClass({
         </div>
         <div className="row">
           <Theorizer play={this.play} handleInput={this.handleInput} />
-          <Improviser playImprov={this.playImprov} />
+          <Improviser playImprov={this.playImprov} songs={this.props.songs} />
         </div>
       </div>
     );
