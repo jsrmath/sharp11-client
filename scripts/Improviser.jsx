@@ -8,6 +8,7 @@ module.exports = React.createClass({
   getInitialState: function () {
     return {
       songValue: 'myFunnyValentine',
+      improv: null,
       tempo: 120,
       dissonance: 0.5,
       changeDirection: 0.25,
@@ -17,9 +18,8 @@ module.exports = React.createClass({
     }
   },
 
-  handleClick: function () {
+  generate: function () {
     var songValue = this.state.songValue;
-    var tempo = this.state.tempo;
     var improv = s11.improv.create({
       dissonance: this.state.dissonance,
       changeDir: this.state.changeDirection,
@@ -29,7 +29,17 @@ module.exports = React.createClass({
       useSixteenths: this.state.tempo < 160,
     }).over('chart', this.props.songs[songValue].chart);
 
-    this.props.playImprov(improv, {tempo: tempo});
+    this.setState({improv: improv});
+  },
+
+  play: function () {
+    this.props.playImprov(this.state.improv, {tempo: this.state.tempo});
+  },
+
+  saveURL: function () {
+    var midi = this.state.improv.midi({tempo: this.state.tempo});
+    var base64 = midi.data.toString('base64');
+    return 'data:audio/midi;base64,' + base64;
   },
 
   handleSelect: function (e) {
@@ -72,8 +82,10 @@ module.exports = React.createClass({
           <Range name="Rests" min="0" max="0.5" updateRange={this.updateRange} value={this.state.rests} />
           <Range name="Rhythmic Variety" min="0" max="1" updateRange={this.updateRange} value={this.state.rhythmicVariety} />
 
-          <div className="col-sm-12">
-            <Button handleClick={this.handleClick} text="Play" />
+          <div className="col-sm-12 btn-group">
+            <Button handleClick={this.generate} text="Generate" />
+            <Button handleClick={this.play} text="Play" hidden={!this.state.improv} />
+            <Button getHref={this.saveURL} download={this.state.songValue + '.mid'} text="Save" hidden={!this.state.improv} />
           </div>
         </div>
       </div>
