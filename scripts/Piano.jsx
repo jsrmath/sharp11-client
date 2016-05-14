@@ -60,15 +60,33 @@ module.exports = React.createClass({
 
   transpose: function (interval) {
     var notes = _.invoke(this.pressedNotes(), 'transpose', S(interval).strip(' ').s);
+    var range = this.props.range;
 
     // Throw error for the sake of this.play
     if (!notes.length) throw new Error();
 
+    // Remove notes that are out of range
+    notes = _.filter(notes, function (note) {
+      return note.inRange(range);
+    });
+
     this.props.play(notes, null, null, this.showObjOnPiano);
   },
 
+  // Put chord or scale in proper octave
+  setOctave: function (obj) {
+    var obj = obj.inOctave(this.props.defaultOctave);
+    var highestNote = _.last(obj.chord || obj.scale);
+
+    if (!highestNote.inRange(this.props.range)) {
+      obj = obj.inOctave(this.props.defaultOctave - 1);
+    }
+
+    return obj;
+  },
+
   playChord: function (chord) {
-    chord = s11.chord.create(S(chord).strip(' ').s, this.props.chordOctave);
+    chord = this.setOctave(s11.chord.create(S(chord).strip(' ').s));
     this.props.play(chord, null, null, this.showObjOnPiano);
   },
 
@@ -79,7 +97,7 @@ module.exports = React.createClass({
     // Throw error for the sake of this.play
     if (S(scaleName).isEmpty()) throw new Error();
     
-    scale = s11.scale.create(root, scaleName).inOctave(this.props.chordOctave);
+    scale = this.setOctave(s11.scale.create(root, scaleName));
     this.props.play(scale, null, null, this.showObjOnPiano);
   },
 
@@ -89,7 +107,7 @@ module.exports = React.createClass({
     settings = _.defaults(settings || {}, {
       tempo: 120, // BPM
       swingRatio: 1.5, // How much longer first eighth note is than second
-      chordOctave: 3
+      chordOctave: this.props.range[0].octave
     });
 
     this.stop();

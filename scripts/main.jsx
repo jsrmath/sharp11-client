@@ -12,7 +12,7 @@ audio.init(function (play, stop) {
       range={[s11.note.create('C3'), s11.note.create('C6')]}
       play={play}
       stop={stop}
-      chordOctave={4}
+      defaultOctave={4}
       songs={songs} />,
     document.getElementById('content')
   );
