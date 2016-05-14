@@ -59,18 +59,25 @@ module.exports = React.createClass({
   },
 
   transpose: function (interval) {
-    var notes = _.invoke(this.pressedNotes(), 'transpose', interval);
+    var notes = _.invoke(this.pressedNotes(), 'transpose', S(interval).strip(' ').s);
+
+    // Throw error for the sake of this.play
+    if (!notes.length) throw new Error();
+
     this.props.play(notes, null, null, this.showObjOnPiano);
   },
 
   playChord: function (chord) {
-    chord = s11.chord.create(chord, this.props.chordOctave);
+    chord = s11.chord.create(S(chord).strip(' ').s, this.props.chordOctave);
     this.props.play(chord, null, null, this.showObjOnPiano);
   },
 
   playScale: function (scale) {
     var root = scale.split(' ')[0];
-    var scaleName = _.rest(scale.split(' ')).join(' ');
+    var scaleName = S(_.rest(scale.split(' ')).join(' ')).collapseWhitespace().s;
+
+    // Throw error for the sake of this.play
+    if (S(scaleName).isEmpty()) throw new Error();
     
     scale = s11.scale.create(root, scaleName).inOctave(this.props.chordOctave);
     this.props.play(scale, null, null, this.showObjOnPiano);
@@ -142,19 +149,30 @@ module.exports = React.createClass({
   play: function () {
     var value = this.state.value;
 
-    // Scale
-    if (S(value).contains(' ')) {
-      this.playScale(value);
+    // If the user has entered "scale" or "chord", interpret appropriately
+    if (S(value).contains('scale')) {
+      this.playScale(S(value).strip('scale').s);
     }
-
-    // Interval
-    else if (/^(m|p|dim|aug)/i.test(value)) {
-      this.transpose(value);
+    else if (S(value).contains('chord')) {
+      this.playChord(S(value).strip('chord').s);
     }
-
-    // Chord
-    else if (/^[a-g]/i.test(value)) {
-      this.playChord(value);
+    // Otherwise, see what works
+    else {
+      // Test for interval
+      try {
+        this.transpose(value);
+      }
+      catch (e) {
+        console.log(e);
+        // Test for scale
+        try {
+          this.playScale(value);
+        }
+        catch (e) {
+          // Assume chord
+          this.playChord(value);
+        }
+      }
     }
   },
 
