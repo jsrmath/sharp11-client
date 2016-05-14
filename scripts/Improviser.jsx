@@ -65,6 +65,7 @@ module.exports = React.createClass({
     return (
       <div className="improviser col-md-6">
         <h2 className="col-sm-12">Improvise</h2>
+        <p className="col-sm-12">Sharp11 will randomly generate a jazz improvisation over any chord changes.  A few sample songs are available here.</p>
         <div className="inline-form">
           <div className="form-group">
             <div className="col-sm-6">
