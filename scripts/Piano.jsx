@@ -167,8 +167,12 @@ module.exports = React.createClass({
   play: function () {
     var value = this.state.value;
 
+    // If the user hasn't entered anything, replay selected notes
+    if (!value) {
+      this.props.play(this.pressedNotes());
+    }
     // If the user has entered "scale" or "chord", interpret appropriately
-    if (S(value).contains('scale')) {
+    else if (S(value).contains('scale')) {
       this.playScale(S(value).strip('scale').s);
     }
     else if (S(value).contains('chord')) {
