@@ -51,7 +51,7 @@ module.exports = React.createClass({
 
   updateRange: function (prop, value) {
     var state = {};
-    state[prop] = value;
+    state[prop] = Number(value);
     this.setState(state);
   },
 
