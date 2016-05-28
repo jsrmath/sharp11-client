@@ -21,8 +21,7 @@ module.exports = React.createClass({
             max={this.props.max}
             step={this.props.step || .05}
             onChange={this.handleChange}
-            value={this.props.value}
-          />
+            value={this.props.value} />
         </div>
       </div>
     );

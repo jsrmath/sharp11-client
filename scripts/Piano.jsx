@@ -201,7 +201,7 @@ module.exports = React.createClass({
   stop: function () {
     this.clearPiano();
     this.props.stop();
-    this.setState({improv: ''});
+    this.setState({improv: '', value: ''});
   },
 
   render: function () {
@@ -230,7 +230,7 @@ module.exports = React.createClass({
           <PianoControls display={this.display} toggleAccidentals={this.toggleAccidentals} stop={this.stop} />
         </div>
         <div className="row">
-          <Theorizer play={this.play} handleInput={this.handleInput} />
+          <Theorizer play={this.play} handleInput={this.handleInput} value={this.state.value} />
           <Improviser playImprov={this.playImprov} songs={this.props.songs} />
         </div>
       </div>
