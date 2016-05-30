@@ -161,11 +161,11 @@ module.exports = React.createClass({
   },
 
   handleInput: function (e) {
-    this.setState({value: S(e.target.value).trim().s});
+    this.setState({value: e.target.value});
   },
 
   play: function () {
-    var value = this.state.value;
+    var value = S(this.state.value).trim().s;
 
     // If the user hasn't entered anything, replay selected notes
     if (!value) {
