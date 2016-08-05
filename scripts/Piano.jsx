@@ -102,6 +102,13 @@ module.exports = React.createClass({
   },
 
   playImprov: function (chart, settings) {
+    var addResolution = function (chart) {
+      return chart.concat({
+        notes: [null],
+        chord: _.first(chart).chord
+      });
+    };
+
     var piano = this;
 
     settings = _.defaults(settings || {}, {
@@ -113,10 +120,10 @@ module.exports = React.createClass({
     this.stop();
 
     // Play chords
-    _.reduce(chart.chart, function (currentTime, change) {
+    _.reduce(addResolution(chart.chart), function (currentTime, change) {
       var changeLength = change.notes.length / settings.tempo * 60;
       var chord = change.chord.inOctave(settings.chordOctave);
-      var changeStr = change.chord.name + ' \u2192 ' + change.scale.name;
+      var changeStr = change.scale ? change.chord.name + ' \u2192 ' + change.scale.name : '';
 
       piano.props.play(chord, currentTime, changeLength, function () {
         piano.setState({improv: changeStr});
