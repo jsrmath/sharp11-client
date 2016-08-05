@@ -9,6 +9,7 @@ module.exports = React.createClass({
     return {
       songValue: 'myFunnyValentine',
       improv: null,
+      playText: 'Play',
       tempo: 120,
       dissonance: 0.5,
       changeDirection: 0.25,
@@ -30,10 +31,12 @@ module.exports = React.createClass({
     }).over('chart', this.props.songs[songValue].chart);
 
     this.setState({improv: improv});
+    this.setState({playText: 'Play'});
   },
 
   play: function () {
     this.props.playImprov(this.state.improv, {tempo: this.state.tempo});
+    this.setState({playText: 'Replay'});
   },
 
   saveURL: function () {
@@ -85,7 +88,7 @@ module.exports = React.createClass({
 
           <div className="col-sm-12 btn-group">
             <Button handleClick={this.generate} text="Generate" />
-            <Button handleClick={this.play} text="Play" hidden={!this.state.improv} />
+            <Button handleClick={this.play} text={this.state.playText} hidden={!this.state.improv} />
             <Button getHref={this.saveURL} download={this.state.songValue + '.mid'} text="Save" hidden={!this.state.improv} />
           </div>
         </div>
