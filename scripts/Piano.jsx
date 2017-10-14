@@ -102,13 +102,6 @@ module.exports = React.createClass({
   },
 
   playImprov: function (chart, settings) {
-    var addResolution = function (chart) {
-      return chart.concat({
-        notes: [null],
-        chord: _.first(chart).chord
-      });
-    };
-
     var piano = this;
 
     settings = _.defaults(settings || {}, {
@@ -120,8 +113,8 @@ module.exports = React.createClass({
     this.stop();
 
     // Play chords
-    _.reduce(addResolution(chart.chart), function (currentTime, change) {
-      var changeLength = change.notes.length / settings.tempo * 60;
+    _.reduce(chart.data, function (currentTime, change) {
+      var changeLength = change.duration.value() / settings.tempo * 60;
       var chord = change.chord.inOctave(settings.chordOctave);
       var changeStr = change.scale ? change.chord.name + ' \u2192 ' + change.scale.name : '';
 
@@ -133,16 +126,11 @@ module.exports = React.createClass({
     }, 0);
 
     // Play notes
-    _.reduce(chart.noteList, function (currentTime, note) {
-      // Use the exposed noteLength function from sharp11 midi library
-      var noteTicks = s11.midi.noteLength(note.duration, settings);
+    _.reduce(chart.notesAndDurations(), function (currentTime, noteObj) {
+      var noteLength = noteObj.duration.value() / settings.tempo * 60;
 
-      // Convert ticks to seconds
-      var ticksPerBeat = 96;
-      var noteLength = noteTicks / ticksPerBeat / settings.tempo * 60;
-
-      if (note.note) {
-        piano.props.play(note.note, currentTime, noteLength, piano.showObjOnPiano);
+      if (noteObj.note) {
+        piano.props.play(noteObj.note, currentTime, noteLength, piano.showObjOnPiano);
       }
 
       return currentTime + noteLength;

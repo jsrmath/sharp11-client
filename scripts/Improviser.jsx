@@ -1,4 +1,5 @@
 var s11 = require('sharp11');
+var improv = require('sharp11-improv');
 var _ = require('underscore');
 var React = require('react');
 var Button = require('./Button.jsx');
@@ -21,16 +22,18 @@ module.exports = React.createClass({
 
   generate: function () {
     var songValue = this.state.songValue;
-    var improv = s11.improv.create({
+    var chart = s11.chart.createSingleton(this.props.songs[songValue].chart);
+    var imp = improv.overChart(chart, {
       dissonance: this.state.dissonance,
       changeDir: this.state.changeDirection,
       jumpiness: this.state.jumpiness,
       rests: [this.state.rests, 0],
       rhythmicVariety: [0, this.state.rhythmicVariety],
       useSixteenths: this.state.tempo < 160,
-    }).over('chart', this.props.songs[songValue].chart);
+      cadence: true,
+    });
 
-    this.setState({improv: improv});
+    this.setState({improv: imp});
     this.setState({playText: 'Play'});
   },
 
