@@ -239,7 +239,7 @@ module.exports = React.createClass({
               <Theorizer play={this.play} handleInput={this.handleInput} value={this.state.value} />
             </Tabs.TabPanel>
             <Tabs.TabPanel>
-              <Improviser playImprov={this.playImprov} songs={this.props.songs} />
+              <Improviser playImprov={this.playImprov} stop={this.stop} songs={this.props.songs} />
             </Tabs.TabPanel>
             <Tabs.TabPanel>
               <Automaton playChord={this.playChord} jza={this.props.jza} />

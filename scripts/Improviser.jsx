@@ -10,7 +10,7 @@ module.exports = React.createClass({
     return {
       songValue: 'myFunnyValentine',
       improv: null,
-      playText: 'Play',
+      playState: 'Play',
       tempo: 120,
       dissonance: 0.5,
       changeDirection: 0.25,
@@ -33,13 +33,20 @@ module.exports = React.createClass({
       cadence: true,
     });
 
+    this.props.stop();
     this.setState({improv: imp});
-    this.setState({playText: 'Play'});
+    this.setState({playState: 'Play'});
   },
 
   play: function () {
-    this.props.playImprov(this.state.improv, {tempo: this.state.tempo});
-    this.setState({playText: 'Replay'});
+    if (this.state.playState === 'Stop') {
+      this.props.stop();
+      this.setState({playState: 'Replay'});
+    }
+    else {
+      this.props.playImprov(this.state.improv, {tempo: this.state.tempo});
+      this.setState({playState: 'Stop'});
+    }
   },
 
   saveURL: function () {
@@ -80,7 +87,7 @@ module.exports = React.createClass({
             </div>
             <div className="col-sm-6 btn-group">
               <Button handleClick={this.generate} text="Generate" />
-              <Button handleClick={this.play} text={this.state.playText} hidden={!this.state.improv} />
+              <Button handleClick={this.play} text={this.state.playState} hidden={!this.state.improv} />
               <Button getHref={this.saveURL} download={this.state.songValue + '.mid'} text="Save" hidden={!this.state.improv} />
             </div>
           </div>
