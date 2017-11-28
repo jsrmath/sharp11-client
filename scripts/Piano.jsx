@@ -6,6 +6,7 @@ var PianoKey = require('./PianoKey.jsx');
 var PianoControls = require('./PianoControls.jsx');
 var Theorizer = require('./Theorizer.jsx');
 var Improviser = require('./Improviser.jsx');
+var Automaton = require('./Automaton.jsx');
 
 module.exports = React.createClass({
   getInitialState: function () {
@@ -227,6 +228,7 @@ module.exports = React.createClass({
         <div className="row">
           <Theorizer play={this.play} handleInput={this.handleInput} value={this.state.value} />
           <Improviser playImprov={this.playImprov} songs={this.props.songs} />
+          <Automaton playChord={this.playChord} jza={this.props.jza} />
         </div>
       </div>
     );
