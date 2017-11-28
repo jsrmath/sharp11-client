@@ -9,7 +9,6 @@ module.exports = React.createClass({
   render: function () {
     return (
       <div className="theorizer col-md-6">
-        <h2>Theorize</h2>
         <p>Enter a chord/scale to play or an interval to transpose selected keys by.</p>
         <p>Examples: <em>Gm7b5</em> , <em>F Mixolydian</em> , <em>P4</em></p>
         <div className="input-group">

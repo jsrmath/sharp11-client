@@ -20,6 +20,7 @@
     "classnames": "^2.2.5",
     "react": "^15.3.0",
     "react-dom": "^15.3.0",
+    "react-tabs": "^2.1.1",
     "sharp11": "^2.0.1",
     "sharp11-improv": "^1.0.1",
     "sharp11-jza": "0.0.2",

@@ -2,6 +2,7 @@ var _ = require('underscore');
 var S = require('string');
 var s11 = require('sharp11');
 var React = require('react');
+var Tabs = require('react-tabs');
 var PianoKey = require('./PianoKey.jsx');
 var PianoControls = require('./PianoControls.jsx');
 var Theorizer = require('./Theorizer.jsx');
@@ -226,9 +227,24 @@ module.exports = React.createClass({
           <PianoControls display={this.display} toggleAccidentals={this.toggleAccidentals} stop={this.stop} />
         </div>
         <div className="row">
-          <Theorizer play={this.play} handleInput={this.handleInput} value={this.state.value} />
-          <Improviser playImprov={this.playImprov} songs={this.props.songs} />
-          <Automaton playChord={this.playChord} jza={this.props.jza} />
+          <Tabs.Tabs selectedTabClassName="active">
+            <div className="col-md-12">
+              <Tabs.TabList className="nav nav-pills nav-justified">
+                <Tabs.Tab><a href="#">Theory Engine</a></Tabs.Tab>
+                <Tabs.Tab><a href="#">Improviser</a></Tabs.Tab>
+                <Tabs.Tab><a href="#">Jazz Automaton</a></Tabs.Tab>
+              </Tabs.TabList>
+            </div>
+            <Tabs.TabPanel>
+              <Theorizer play={this.play} handleInput={this.handleInput} value={this.state.value} />
+            </Tabs.TabPanel>
+            <Tabs.TabPanel>
+              <Improviser playImprov={this.playImprov} songs={this.props.songs} />
+            </Tabs.TabPanel>
+            <Tabs.TabPanel>
+              <Automaton playChord={this.playChord} jza={this.props.jza} />
+            </Tabs.TabPanel>
+          </Tabs.Tabs>
         </div>
       </div>
     );

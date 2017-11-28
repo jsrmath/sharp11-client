@@ -69,32 +69,32 @@ module.exports = React.createClass({
     });
 
     return (
-      <div className="improviser col-md-6">
-        <h2 className="col-sm-12">Improvise</h2>
-        <p className="col-sm-12">Sharp11 will randomly generate a jazz improvisation over any chord changes.  A few sample songs are available here.</p>
-        <div className="inline-form">
-          <div className="form-group">
-            <div className="col-sm-6">
-              <label className="control-label">Song</label>
+      <div className="improviser">
+        <div className="col-md-6">
+          <p>Sharp11 will randomly generate a jazz improvisation over any chord changes.  A few sample songs are available here.</p>
+          <div className="inline-form row">
+            <div className="col-sm-6 form-group">
               <select className="form-control" value={this.state.songValue} onChange={this.handleSelect}>
                 {songList}
               </select>
             </div>
-          </div>
-
-          <Range name="Tempo" min="60" max="200" step="5" updateRange={this.updateRange} value={this.state.tempo} />
-          <Range name="Dissonance" min="0" max="1" updateRange={this.updateRange} value={this.state.dissonance} />
-          <Range name="Change Direction" min="0" max="0.5" updateRange={this.updateRange} value={this.state.changeDir} />
-          <Range name="Jumpiness" min="0" max="0.5" updateRange={this.updateRange} value={this.state.jumpiness} />
-          <Range name="Rests" min="0" max="0.5" updateRange={this.updateRange} value={this.state.rests} />
-          <Range name="Rhythmic Variety" min="0" max="1" updateRange={this.updateRange} value={this.state.rhythmicVariety} />
-
-          <div className="col-sm-12 btn-group">
-            <Button handleClick={this.generate} text="Generate" />
-            <Button handleClick={this.play} text={this.state.playText} hidden={!this.state.improv} />
-            <Button getHref={this.saveURL} download={this.state.songValue + '.mid'} text="Save" hidden={!this.state.improv} />
+            <div className="col-sm-6 btn-group">
+              <Button handleClick={this.generate} text="Generate" />
+              <Button handleClick={this.play} text={this.state.playText} hidden={!this.state.improv} />
+              <Button getHref={this.saveURL} download={this.state.songValue + '.mid'} text="Save" hidden={!this.state.improv} />
+            </div>
           </div>
         </div>
+        <div className="col-md-3">
+          <Range name="Tempo" min="60" max="200" step="5" updateRange={this.updateRange} value={this.state.tempo} />
+          <Range name="Change Direction" min="0" max="0.5" updateRange={this.updateRange} value={this.state.changeDir} />
+          <Range name="Rests" min="0" max="0.5" updateRange={this.updateRange} value={this.state.rests} />
+        </div>
+        <div className="col-md-3">
+          <Range name="Dissonance" min="0" max="1" updateRange={this.updateRange} value={this.state.dissonance} />
+          <Range name="Jumpiness" min="0" max="0.5" updateRange={this.updateRange} value={this.state.jumpiness} />
+          <Range name="Rhythmic Variety" min="0" max="1" updateRange={this.updateRange} value={this.state.rhythmicVariety} />
+        </div>          
       </div>
     );
   }

@@ -107,7 +107,6 @@ module.exports = React.createClass({
   render: function () {
     return (
       <div className="automaton col-md-12" onKeyDown={this.handleKeyDown}>
-        <h2>Jazz Automaton</h2>
         <p>Controls:</p>
         <ul>
           <li>Left/right: scroll between chords</li>
