@@ -73,3 +73,7 @@
 .improvRange {
   margin-bottom: 0;
 }
+.theorizer em {
+  margin-left: .7em;
+  color: #999;
+}
