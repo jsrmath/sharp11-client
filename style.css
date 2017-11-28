@@ -39,7 +39,7 @@
 .whiteKey.pressed {
   background-color: #CCC;
 }
-.btn-group .btn {
+.pianoButtons .btn {
   border-top-right-radius: 0px;
   border-top-left-radius: 0px;
 }

@@ -5,7 +5,7 @@ module.exports = React.createClass({
   render: function () {
     return (
       <div className="controls">
-        <div className="btn-group">
+        <div className="btn-group pianoButtons">
           <Button handleClick={this.props.toggleAccidentals} text="# &harr; b" />
           <Button handleClick={this.props.stop} text="Clear" />
         </div>
