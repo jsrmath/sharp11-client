@@ -29,19 +29,13 @@ module.exports = React.createClass({
     this.setState({acc: this.state.acc === 'b' ? '#' : 'b'});
   },
 
-  // Given a sharp11 object, turn its corresponding keys on and all others off
   // Used as callback for play function
-  showObjOnPiano: function (obj, note) {
-    var notes = [note];
+  // The obj argument is ignored, since we're only concerned with the individual note being played
+  showNoteOnPianoCallback: function (obj, note) {
+    this.setState({pressedKeys: [note.value()]});
+  },
 
-    // If the object we're displaying is a chord or an array, show all the notes at once
-    if (s11.chord.isChord(obj)) {
-      notes = obj.chord;
-    }
-    if (obj instanceof Array) {
-      notes = obj;
-    }
-
+  showNotesOnPiano: function (notes) {
     this.setState({pressedKeys: _.invoke(notes, 'value')});
   },
 
@@ -72,7 +66,8 @@ module.exports = React.createClass({
       return note.inRange(range);
     });
 
-    this.props.play(notes, null, null, this.showObjOnPiano);
+    this.props.play(notes);
+    this.showNotesOnPiano(notes);
   },
 
   // Put chord or scale in proper octave
@@ -89,7 +84,8 @@ module.exports = React.createClass({
 
   playChord: function (chord) {
     chord = this.setOctave(s11.chord.create(S(chord).strip(' ').s));
-    this.props.play(chord, null, null, this.showObjOnPiano);
+    this.props.play(chord);
+    this.showNotesOnPiano(chord.chord);
   },
 
   playScale: function (scale) {
@@ -100,7 +96,7 @@ module.exports = React.createClass({
     if (S(scaleName).isEmpty()) throw new Error();
     
     scale = this.setOctave(s11.scale.create(root, scaleName));
-    this.props.play(scale, null, null, this.showObjOnPiano);
+    this.props.play(scale, null, null, this.showNoteOnPianoCallback);
   },
 
   playImprov: function (chart, settings) {
@@ -132,7 +128,7 @@ module.exports = React.createClass({
       var noteLength = noteObj.duration.value() / settings.tempo * 60;
 
       if (noteObj.note) {
-        piano.props.play(noteObj.note, currentTime, noteLength, piano.showObjOnPiano);
+        piano.props.play(noteObj.note, currentTime, noteLength, piano.showNoteOnPianoCallback);
       }
 
       return currentTime + noteLength;
@@ -182,7 +178,6 @@ module.exports = React.createClass({
         this.transpose(value);
       }
       catch (e) {
-        console.log(e);
         // Test for scale
         try {
           this.playScale(value);

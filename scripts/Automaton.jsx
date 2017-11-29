@@ -57,8 +57,7 @@ module.exports = React.createClass({
 
   play: function () {
     var symbol = this.state.sequence.index(this.state.index).symbol;
-    var chord = symbol.toChord();
-    this.props.playChord(chord.name);
+    this.props.playChord(symbol.toChord().name);
   },
 
   addChord: function () {
