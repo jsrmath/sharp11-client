@@ -5,7 +5,7 @@ var classNames = require('classnames');
 module.exports = React.createClass({
   getInitialState: function () {
     return {
-      sequence: this.props.jza.buildSequence(),
+      sequenceStack: [this.props.jza.buildSequence()],
       index: -1
     };
   },
@@ -16,6 +16,26 @@ module.exports = React.createClass({
 
   componentWillUnmount: function () {
     window.removeEventListener('keydown', this.handleKeyDown);
+  },
+
+  sequence: function () {
+    return _.last(this.state.sequenceStack);
+  },
+
+  index: function () {
+    return this.state.index;
+  },
+
+  setSequence: function (seq) {
+    this.setState({sequenceStack: this.state.sequenceStack.concat([seq])});
+  },
+
+  setIndex: function (i) {
+    this.setState({index: i});
+  },
+
+  setSequenceAndIndex: function (seq, i) {
+    this.setState({sequenceStack: this.state.sequenceStack.concat([seq]), index: i});
   },
 
   handleKeyDown: function (e) {
@@ -38,64 +58,68 @@ module.exports = React.createClass({
       case 82:
         this.reharmonize();
         break;
+      case 85:
+        this.undo();
+        break;
     }
   },
 
   moveLeft: function () {
-    var index = this.state.index;
-    if (index > 0) {
-      this.setState({index: index - 1});
+    if (this.index() > 0) {
+      this.setIndex(this.index() - 1);
     }
   },
 
   moveRight: function () {
-    var index = this.state.index;
-    if (index < this.state.sequence.length() - 1) {
-      this.setState({index: index + 1});
+    if (this.index() < this.sequence().length() - 1) {
+      this.setIndex(this.index() + 1);
     }
   },
 
   play: function () {
-    var symbol = this.state.sequence.index(this.state.index).symbol;
+    var symbol = this.sequence().index(this.index()).symbol;
     this.props.playChord(symbol.toChord().name);
   },
 
   addChord: function () {
-    var i = this.state.index;
-    var seq = this.state.sequence.add();
+    var seq = this.sequence().add();
+    var i = seq.length() === 1 ? 0 : this.index();
 
-    if (seq.length() === 1) i = 0;
-    this.setState({sequence: seq, index: i});
+    this.setSequenceAndIndex(seq, i);
   },
 
   removeChord: function () {
-    var i = this.state.index;
-    var seq = this.state.sequence.remove();
+    var seq = this.sequence().remove();
+    var i = this.index() >= seq.length() - 1 ? seq.length() - 1 : this.index();
 
-    if (i >= seq.length() - 1) i = seq.length() - 1;
-    this.setState({sequence: seq, index: i});
+    this.setSequenceAndIndex(seq, i);
   },
 
   reharmonize: function () {
-    var i = this.state.index;
-    var seq = this.state.sequence.reharmonizeAtIndex(i);
+    var seq = this.sequence().reharmonizeAtIndex(this.index());
+    var i = this.index() >= seq.length() - 1 ? seq.length() - 1 : this.index();
 
-    if (i >= seq.length() - 1) i = seq.length() - 1;
-    this.setState({sequence: seq, index: i});
+    this.setSequenceAndIndex(seq, i);
   },
 
-  setActiveIndex: function (i) {
-    this.setState({index: i});
+  undo: function () {
+    var that = this;
+    if (this.state.sequenceStack.length < 2) return;
+
+    this.setState({sequenceStack: this.state.sequenceStack.slice(0, -1)}, function () {
+      if (that.index() >= that.sequence().length()) {
+        that.setIndex(that.sequence().length() - 1);
+      }
+    });
   },
 
   renderChords: function () {
-    var activeIndex = this.state.index;
-    var setActiveIndex = this.setActiveIndex;
+    var that = this;
 
-    return _.map(this.state.sequence.transitions, function (transition, i) {
-      var classes = classNames('automatonItem', {automatonItemActive: i === activeIndex});
+    return _.map(this.sequence().transitions, function (transition, i) {
+      var classes = classNames('automatonItem', {automatonItemActive: i === that.state.index});
       return (
-        <div className={classes} key={'automaton-' + i} onClick={_.partial(setActiveIndex, i)}>
+        <div className={classes} key={'automaton-' + i} onClick={_.partial(that.setIndex, i)}>
           <div className="automatonChord"><span>{transition.symbol.toChord().name}</span></div>
           <div className="automatonState">{transition.to.name}</div>
         </div>
@@ -113,6 +137,7 @@ module.exports = React.createClass({
           <li>A: add chord to the end of the sequence</li>
           <li>D: delete chord from the end of the sequence</li>
           <li>R: reharmonize selected chord</li>
+          <li>U: undo last change</li>
         </ul>
         <div>
           {this.renderChords()}
