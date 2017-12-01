@@ -9,13 +9,15 @@ var Theorizer = require('./Theorizer.jsx');
 var Improviser = require('./Improviser.jsx');
 var Automaton = require('./Automaton.jsx');
 
+var theorizerInstructionText = 'Select notes on the piano to identify a chord or interval';
+
 module.exports = React.createClass({
   getInitialState: function () {
     return {
       acc: 'b',
       pressedKeys: [],
       value: '',
-      improv: '',
+      displayedValue: theorizerInstructionText,
       canClickPiano: true,
     };
   },
@@ -52,7 +54,7 @@ module.exports = React.createClass({
   },
 
   clearPiano: function () {
-    this.setState({pressedKeys: []});
+    this.setState({pressedKeys: [], displayedValue: ''});
   },
 
   transpose: function (interval) {
@@ -118,7 +120,7 @@ module.exports = React.createClass({
       var changeStr = change.scale ? change.chord.name + ' \u2192 ' + change.scale.name : '';
 
       piano.props.play(chord, currentTime, changeLength, function () {
-        piano.setState({improv: changeStr});
+        piano.setState({displayedValue: changeStr});
       });
 
       return currentTime + changeLength;
@@ -151,7 +153,7 @@ module.exports = React.createClass({
   },
 
   display: function () {
-    return this.identify() || this.state.improv;
+    return this.identify() || this.state.displayedValue;
   },
 
   handleInput: function (e) {
@@ -199,7 +201,10 @@ module.exports = React.createClass({
 
   handleTabSelect: function (index) {
     this.stop();
-    this.setState({canClickPiano: index === 0});
+    this.setState({
+      canClickPiano: index === 0,
+      displayedValue: index === 0 ? theorizerInstructionText : ''
+    });
   },
 
   render: function () {
