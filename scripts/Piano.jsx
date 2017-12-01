@@ -15,7 +15,8 @@ module.exports = React.createClass({
       acc: 'b',
       pressedKeys: [],
       value: '',
-      improv: ''
+      improv: '',
+      canClickPiano: true,
     };
   },
 
@@ -196,9 +197,15 @@ module.exports = React.createClass({
     this.setState({improv: '', value: ''});
   },
 
+  handleTabSelect: function (index) {
+    this.stop();
+    this.setState({canClickPiano: index === 0});
+  },
+
   render: function () {
     var pianoKeys = [];
     var note = this.props.range[0];
+    var canClickPiano = this.state.canClickPiano;
     var key;
 
     while (note.inRange(this.props.range)) {
@@ -209,7 +216,7 @@ module.exports = React.createClass({
         acc={this.state.acc}
         key={key}
         pressed={_.contains(this.state.pressedKeys, key)}
-        pressKey={this.pressKey.bind(this, note)}
+        pressKey={canClickPiano ? this.pressKey.bind(this, note) : null}
       />);
 
       note = note.sharp().clean();
@@ -222,7 +229,7 @@ module.exports = React.createClass({
           <PianoControls display={this.display} toggleAccidentals={this.toggleAccidentals} stop={this.stop} />
         </div>
         <div className="row">
-          <Tabs.Tabs selectedTabClassName="active">
+          <Tabs.Tabs selectedTabClassName="active" onSelect={this.handleTabSelect}>
             <div className="col-md-12">
               <Tabs.TabList className="nav nav-pills nav-justified">
                 <Tabs.Tab><a href="#">Theory Engine</a></Tabs.Tab>
