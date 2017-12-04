@@ -44,17 +44,20 @@ module.exports = React.createClass({
 
   handleKeyDown: function (e) {
     switch (e.keyCode) {
+      case 32:
+        this.play();
+        break;
       case 37:
         this.moveLeft();
         break;
       case 39:
         this.moveRight();
         break;
-      case 32:
-        this.play();
-        break;
       case 65:
         this.addChord();
+        break;
+      case 67:
+        this.clear();
         break;
       case 68:
         this.removeChord();
@@ -117,6 +120,13 @@ module.exports = React.createClass({
     });
   },
 
+  clear: function () {
+    this.setState({
+      sequenceStack: this.state.sequenceStack.concat([this.props.jza.buildSequence()]),
+      index: -1
+    });
+  },
+
   renderChords: function () {
     var that = this;
 
@@ -164,6 +174,7 @@ module.exports = React.createClass({
             <li><kbd>D</kbd>elete chord from the end of the sequence</li>
             <li><kbd>R</kbd>eharmonize selected chord</li>
             <li><kbd>U</kbd>ndo last change</li>
+            <li><kbd>C</kbd>lear sequence</li>
           </ul>
         </div>
         <div className="col-md-12">
