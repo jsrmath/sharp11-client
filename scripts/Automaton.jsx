@@ -1,12 +1,16 @@
 var React = require('react');
 var _ = require('underscore');
 var classNames = require('classnames');
+var Modal = require('react-bootstrap-modal');
+var Button = require('./Button.jsx');
 
 module.exports = React.createClass({
   getInitialState: function () {
     return {
       sequenceStack: [this.props.jza.buildSequence()],
-      index: -1
+      index: -1,
+      showAutomatonModal: false,
+      showFunctionalBassModal: false,
     };
   },
 
@@ -116,6 +120,10 @@ module.exports = React.createClass({
   renderChords: function () {
     var that = this;
 
+    if (!this.sequence().length()) {
+      return <p>Press <kbd>A</kbd> to add your first chord</p>;
+    }
+
     return _.map(this.sequence().transitions, function (transition, i) {
       var classes = classNames('automatonItem', {automatonItemActive: i === that.state.index});
       return (
@@ -127,21 +135,62 @@ module.exports = React.createClass({
     });
   },
 
+  toggleAutomatonModal: function () {
+    this.setState({showAutomatonModal: !this.state.showAutomatonModal});
+  },
+
+  toggleFunctionalBassModal: function () {
+    this.setState({showFunctionalBassModal: !this.state.showFunctionalBassModal});
+  },
+
   render: function () {
     return (
-      <div className="automaton col-md-12" onKeyDown={this.handleKeyDown}>
-        <p>Controls:</p>
-        <ul>
-          <li>Left/right: scroll between chords</li>
-          <li>Spacebar: play current chord</li>
-          <li>A: add chord to the end of the sequence</li>
-          <li>D: delete chord from the end of the sequence</li>
-          <li>R: reharmonize selected chord</li>
-          <li>U: undo last change</li>
-        </ul>
-        <div>
+      <div className="automaton">
+        <div className="col-md-6">
+          <ul>
+            <li>
+              Build a sequence of jazz chords using Sharp11's <a href="#" onClick={this.toggleAutomatonModal}>probabilistic automaton model</a>
+            </li>
+            <li>
+              The generated chords will have a corresponding <a href="#" onClick={this.toggleFunctionalBassModal}>functional-bass analysis</a>
+            </li>
+          </ul>
+        </div>
+        <div className="col-md-6">
+          <ul>
+            <li><kbd>⇦</kbd> / <kbd>⇨</kbd>: scroll between chords</li>
+            <li><kbd>Space</kbd>: play current chord</li>
+            <li><kbd>A</kbd>dd chord to the end of the sequence</li>
+            <li><kbd>D</kbd>elete chord from the end of the sequence</li>
+            <li><kbd>R</kbd>eharmonize selected chord</li>
+            <li><kbd>U</kbd>ndo last change</li>
+          </ul>
+        </div>
+        <div className="col-md-12">
           {this.renderChords()}
         </div>
+        <Modal show={this.state.showAutomatonModal}
+          onHide={this.toggleAutomatonModal}
+          aria-labelledby="ModalHeader"
+        >
+          <Modal.Header>
+            <Modal.Title>Jazz Automaton</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Content TBD
+          </Modal.Body>
+        </Modal>
+        <Modal show={this.state.showFunctionalBassModal}
+          onHide={this.toggleFunctionalBassModal}
+          aria-labelledby="ModalHeader"
+        >
+          <Modal.Header>
+            <Modal.Title>Functional Bass Analysis</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Content TBD
+          </Modal.Body>
+        </Modal>
       </div>
     );
   }

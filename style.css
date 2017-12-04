@@ -77,3 +77,12 @@
   margin-left: .7em;
   color: #999;
 }
+.automaton ul {
+  padding-left: 0;
+}
+.automaton li {
+  list-style-type: none;
+}
+.modal {
+  display:block;
+}
