@@ -4,11 +4,17 @@ var classNames = require('classnames');
 var Modal = require('react-bootstrap-modal');
 var Button = require('./Button.jsx');
 
+loadingChord = <div className="automatonItem" key="automaton-loading">
+  <div className="automatonChord"><span>...</span></div>
+  <div className="automatonState">Loading</div>
+</div>;
+
 module.exports = React.createClass({
   getInitialState: function () {
     return {
       sequenceStack: [this.props.jza.buildSequence()],
       index: -1,
+      loadingAt: null,
       showAutomatonModal: false,
       showFunctionalBassModal: false,
     };
@@ -54,7 +60,7 @@ module.exports = React.createClass({
         this.moveRight();
         break;
       case 65:
-        this.addChord();
+        this.executeWithLoadingSpinner(this.addChord, 'end');
         break;
       case 67:
         this.clear();
@@ -63,12 +69,21 @@ module.exports = React.createClass({
         this.removeChord();
         break;
       case 82:
-        this.reharmonize();
+        this.executeWithLoadingSpinner(this.reharmonize, 'index');
         break;
       case 85:
         this.undo();
         break;
     }
+  },
+
+  executeWithLoadingSpinner: function (func, loadingAt) {
+    var setState = this.setState.bind(this);
+    setState({loadingAt: loadingAt});
+    setTimeout(function () {
+      func();
+      setState({loadingAt: null});
+    }, 0);
   },
 
   moveLeft: function () {
@@ -128,14 +143,20 @@ module.exports = React.createClass({
   },
 
   renderChords: function () {
+    var loadingAt = this.state.loadingAt;
     var that = this;
 
-    if (!this.sequence().length()) {
+    if (!this.sequence().length() && loadingAt !== 'end') {
       return <p>Press <kbd>A</kbd> to add your first chord</p>;
     }
 
     return _.map(this.sequence().transitions, function (transition, i) {
       var classes = classNames('automatonItem', {automatonItemActive: i === that.state.index});
+
+      if (loadingAt === 'index' && i === that.state.index) {
+        return loadingChord;
+      }
+
       return (
         <div className={classes} key={'automaton-' + i} onClick={_.partial(that.setIndex, i)}>
           <div className="automatonChord"><span>{transition.symbol.toChord().name}</span></div>
@@ -179,6 +200,7 @@ module.exports = React.createClass({
         </div>
         <div className="col-md-12">
           {this.renderChords()}
+          {this.state.loadingAt === 'end' ? loadingChord : null}
         </div>
         <Modal show={this.state.showAutomatonModal}
           onHide={this.toggleAutomatonModal}
