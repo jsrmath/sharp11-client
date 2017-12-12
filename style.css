@@ -51,7 +51,8 @@
   border: none;
 }
 .automatonItem {
-  padding: 4px;
+  padding-right: 8px;
+  padding-top: 4px;
   display: inline-block;
 }
 .automatonChord {
@@ -88,4 +89,14 @@
 }
 .automatonModal .modal-dialog {
   width: 75vw;
+}
+.automatonKeyChange {
+  display: block;
+}
+.automatonKeyChange select {
+  background-color: #ffffff;
+  border: 1px solid #dce4ec;
+  border-radius: 4px;
+  margin-left: 4px;
+  margin-bottom: 8px;
 }

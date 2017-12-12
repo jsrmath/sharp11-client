@@ -17,6 +17,7 @@ module.exports = React.createClass({
       loadingAt: null,
       showAutomatonModal: false,
       showFunctionalBassModal: false,
+      key: 'C',
     };
   },
 
@@ -49,6 +50,7 @@ module.exports = React.createClass({
   },
 
   handleKeyDown: function (e) {
+    e.preventDefault();
     switch (e.keyCode) {
       case 32:
         this.play();
@@ -144,10 +146,11 @@ module.exports = React.createClass({
 
   renderChords: function () {
     var loadingAt = this.state.loadingAt;
+    var key = this.state.key;
     var that = this;
 
     if (!this.sequence().length() && loadingAt !== 'end') {
-      return <p>Press <kbd>A</kbd> to add your first chord</p>;
+      return <p className="automatonItem">Press <kbd>A</kbd> to add your first chord</p>;
     }
 
     return _.map(this.sequence().transitions, function (transition, i) {
@@ -159,11 +162,31 @@ module.exports = React.createClass({
 
       return (
         <div className={classes} key={'automaton-' + i} onClick={_.partial(that.setIndex, i)}>
-          <div className="automatonChord"><span>{transition.symbol.toChord().name}</span></div>
+          <div className="automatonChord"><span>{transition.symbol.toChord(key).name}</span></div>
           <div className="automatonState">{transition.to.name}</div>
         </div>
       );
     });
+  },
+
+  handleKeyChange: function (e) {
+    this.setState({key: e.target.value});
+  },
+
+  renderKeySelect: function () {
+    var keys = ['C', 'C#', 'Db', 'D', 'D#', 'Eb', 'E', 'F', 'F#', 'Gb', 'G', 'G#', 'Ab', 'A', 'A#', 'Bb', 'B'];
+    var keyOptions = _.map(keys, function (key) {
+      return <option key={key} value={key}>{key}</option>
+    });
+
+    return (
+      <div className="automatonKeyChange">
+        <label for="keyChange">Key:</label>
+        <select id="keyChange" value={this.state.key} onChange={this.handleKeyChange}>
+          {keyOptions}
+        </select>
+      </div>
+    );
   },
 
   toggleAutomatonModal: function () {
@@ -202,6 +225,7 @@ module.exports = React.createClass({
           </ul>
         </div>
         <div className="col-md-12">
+          {this.renderKeySelect()}
           {this.renderChords()}
           {this.state.loadingAt === 'end' ? loadingChord : null}
         </div>
