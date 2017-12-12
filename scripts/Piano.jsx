@@ -2,10 +2,14 @@ var _ = require('underscore');
 var S = require('string');
 var s11 = require('sharp11');
 var React = require('react');
+var Tabs = require('react-tabs');
 var PianoKey = require('./PianoKey.jsx');
 var PianoControls = require('./PianoControls.jsx');
 var Theorizer = require('./Theorizer.jsx');
 var Improviser = require('./Improviser.jsx');
+var Automaton = require('./Automaton.jsx');
+
+var theorizerInstructionText = 'Select notes on the piano to identify a chord or interval';
 
 module.exports = React.createClass({
   getInitialState: function () {
@@ -13,7 +17,8 @@ module.exports = React.createClass({
       acc: 'b',
       pressedKeys: [],
       value: '',
-      improv: ''
+      displayedValue: theorizerInstructionText,
+      canClickPiano: true,
     };
   },
 
@@ -27,19 +32,13 @@ module.exports = React.createClass({
     this.setState({acc: this.state.acc === 'b' ? '#' : 'b'});
   },
 
-  // Given a sharp11 object, turn its corresponding keys on and all others off
   // Used as callback for play function
-  showObjOnPiano: function (obj, note) {
-    var notes = [note];
+  // The obj argument is ignored, since we're only concerned with the individual note being played
+  showNoteOnPianoCallback: function (obj, note) {
+    this.setState({pressedKeys: [note.value()]});
+  },
 
-    // If the object we're displaying is a chord or an array, show all the notes at once
-    if (s11.chord.isChord(obj)) {
-      notes = obj.chord;
-    }
-    if (obj instanceof Array) {
-      notes = obj;
-    }
-
+  showNotesOnPiano: function (notes) {
     this.setState({pressedKeys: _.invoke(notes, 'value')});
   },
 
@@ -55,7 +54,7 @@ module.exports = React.createClass({
   },
 
   clearPiano: function () {
-    this.setState({pressedKeys: []});
+    this.setState({pressedKeys: [], displayedValue: ''});
   },
 
   transpose: function (interval) {
@@ -70,7 +69,8 @@ module.exports = React.createClass({
       return note.inRange(range);
     });
 
-    this.props.play(notes, null, null, this.showObjOnPiano);
+    this.props.play(notes);
+    this.showNotesOnPiano(notes);
   },
 
   // Put chord or scale in proper octave
@@ -87,7 +87,8 @@ module.exports = React.createClass({
 
   playChord: function (chord) {
     chord = this.setOctave(s11.chord.create(S(chord).strip(' ').s));
-    this.props.play(chord, null, null, this.showObjOnPiano);
+    this.props.play(chord);
+    this.showNotesOnPiano(chord.chord);
   },
 
   playScale: function (scale) {
@@ -98,7 +99,7 @@ module.exports = React.createClass({
     if (S(scaleName).isEmpty()) throw new Error();
     
     scale = this.setOctave(s11.scale.create(root, scaleName));
-    this.props.play(scale, null, null, this.showObjOnPiano);
+    this.props.play(scale, null, null, this.showNoteOnPianoCallback);
   },
 
   playImprov: function (chart, settings) {
@@ -119,7 +120,7 @@ module.exports = React.createClass({
       var changeStr = change.scale ? change.chord.name + ' \u2192 ' + change.scale.name : '';
 
       piano.props.play(chord, currentTime, changeLength, function () {
-        piano.setState({improv: changeStr});
+        piano.setState({displayedValue: changeStr});
       });
 
       return currentTime + changeLength;
@@ -130,7 +131,7 @@ module.exports = React.createClass({
       var noteLength = noteObj.duration.value() / settings.tempo * 60;
 
       if (noteObj.note) {
-        piano.props.play(noteObj.note, currentTime, noteLength, piano.showObjOnPiano);
+        piano.props.play(noteObj.note, currentTime, noteLength, piano.showNoteOnPianoCallback);
       }
 
       return currentTime + noteLength;
@@ -152,7 +153,7 @@ module.exports = React.createClass({
   },
 
   display: function () {
-    return this.identify() || this.state.improv;
+    return this.identify() || this.state.displayedValue;
   },
 
   handleInput: function (e) {
@@ -180,7 +181,6 @@ module.exports = React.createClass({
         this.transpose(value);
       }
       catch (e) {
-        console.log(e);
         // Test for scale
         try {
           this.playScale(value);
@@ -199,9 +199,18 @@ module.exports = React.createClass({
     this.setState({improv: '', value: ''});
   },
 
+  handleTabSelect: function (index) {
+    this.stop();
+    this.setState({
+      canClickPiano: index === 0,
+      displayedValue: index === 0 ? theorizerInstructionText : ''
+    });
+  },
+
   render: function () {
     var pianoKeys = [];
     var note = this.props.range[0];
+    var canClickPiano = this.state.canClickPiano;
     var key;
 
     while (note.inRange(this.props.range)) {
@@ -212,7 +221,7 @@ module.exports = React.createClass({
         acc={this.state.acc}
         key={key}
         pressed={_.contains(this.state.pressedKeys, key)}
-        pressKey={this.pressKey.bind(this, note)}
+        pressKey={canClickPiano ? this.pressKey.bind(this, note) : null}
       />);
 
       note = note.sharp().clean();
@@ -225,8 +234,24 @@ module.exports = React.createClass({
           <PianoControls display={this.display} toggleAccidentals={this.toggleAccidentals} stop={this.stop} />
         </div>
         <div className="row">
-          <Theorizer play={this.play} handleInput={this.handleInput} value={this.state.value} />
-          <Improviser playImprov={this.playImprov} songs={this.props.songs} />
+          <Tabs.Tabs selectedTabClassName="active" onSelect={this.handleTabSelect}>
+            <div className="col-md-12">
+              <Tabs.TabList className="nav nav-pills nav-justified">
+                <Tabs.Tab><a href="#">Theory Engine</a></Tabs.Tab>
+                <Tabs.Tab><a href="#">Improviser</a></Tabs.Tab>
+                <Tabs.Tab><a href="#">Jazz Automaton</a></Tabs.Tab>
+              </Tabs.TabList>
+            </div>
+            <Tabs.TabPanel>
+              <Theorizer play={this.play} handleInput={this.handleInput} value={this.state.value} />
+            </Tabs.TabPanel>
+            <Tabs.TabPanel>
+              <Improviser playImprov={this.playImprov} stop={this.stop} songs={this.props.songs} />
+            </Tabs.TabPanel>
+            <Tabs.TabPanel>
+              <Automaton playChord={this.playChord} jza={this.props.jza} />
+            </Tabs.TabPanel>
+          </Tabs.Tabs>
         </div>
       </div>
     );

@@ -39,11 +39,64 @@
 .whiteKey.pressed {
   background-color: #CCC;
 }
-.btn-group .btn {
+.pianoButtons .btn {
   border-top-right-radius: 0px;
   border-top-left-radius: 0px;
 }
 .display {
   padding-left: 15px;
   text-align: center;
+}
+.automaton {
+  border: none;
+}
+.automatonItem {
+  padding-right: 8px;
+  padding-top: 4px;
+  display: inline-block;
+}
+.automatonChord {
+  text-align: center;
+  cursor: pointer;
+}
+.automatonItemActive .automatonChord span {
+  border: 4px solid #CCFBCC;
+  margin: -4px;
+  background: #CCFBCC;
+}
+.automatonState {
+  font-size: x-small;
+  color: #999;
+}
+.nav {
+  margin: 20px 0;
+}
+.improvRange {
+  margin-bottom: 0;
+}
+.theorizer em {
+  margin-left: .7em;
+  color: #999;
+}
+.automaton ul {
+  padding-left: 0;
+}
+.automaton li {
+  list-style-type: none;
+}
+.automatonModal {
+  display: block;
+}
+.automatonModal .modal-dialog {
+  width: 75vw;
+}
+.automatonKeyChange {
+  display: block;
+}
+.automatonKeyChange select {
+  background-color: #ffffff;
+  border: 1px solid #dce4ec;
+  border-radius: 4px;
+  margin-left: 4px;
+  margin-bottom: 8px;
 }
