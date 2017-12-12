@@ -83,6 +83,9 @@
 .automaton li {
   list-style-type: none;
 }
-.modal {
-  display:block;
+.automatonModal {
+  display: block;
+}
+.automatonModal .modal-dialog {
+  width: 75vw;
 }
