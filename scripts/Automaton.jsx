@@ -102,7 +102,7 @@ module.exports = React.createClass({
 
   play: function () {
     var symbol = this.sequence().index(this.index()).symbol;
-    this.props.playChord(symbol.toChord().name);
+    this.props.playChord(symbol.toChord(this.state.key).name);
   },
 
   addChord: function () {
