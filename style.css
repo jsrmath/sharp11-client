@@ -90,6 +90,17 @@
 .automatonModal .modal-dialog {
   width: 75vw;
 }
+.automatonModalClose, .automatonModalClose:hover {
+  color: #777;
+  position: absolute;
+  right: 10px;
+  text-decoration: none;
+  text-shadow: 0 1px 0 #fff;
+  top: 10px;
+}
+.automatonModalClose:after {
+  content: '✖';
+}
 .automatonKeyChange {
   display: block;
 }

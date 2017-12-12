@@ -181,7 +181,7 @@ module.exports = React.createClass({
 
     return (
       <div className="automatonKeyChange">
-        <label for="keyChange">Key:</label>
+        <label htmlFor="keyChange">Key:</label>
         <select id="keyChange" value={this.state.key} onChange={this.handleKeyChange}>
           {keyOptions}
         </select>
@@ -211,6 +211,9 @@ module.exports = React.createClass({
             <li>
               Play around with the code behind the automaton <a href="https://github.com/jsrmath/sharp11-jza">here</a>
             </li>
+            <li>
+              Note: The automaton does not differentiate between major and minor keys
+            </li>
           </ul>
         </div>
         <div className="col-md-6">
@@ -237,6 +240,7 @@ module.exports = React.createClass({
         >
           <Modal.Header>
             <Modal.Title>Jazz Automaton</Modal.Title>
+            <a href="#" className="automatonModalClose" onClick={this.toggleAutomatonModal} />
           </Modal.Header>
           <Modal.Body>
             <p>
@@ -273,6 +277,7 @@ module.exports = React.createClass({
         >
           <Modal.Header>
             <Modal.Title>Functional Bass Analysis</Modal.Title>
+            <a href="#" className="automatonModalClose" onClick={this.toggleFunctionalBassModal} />
           </Modal.Header>
           <Modal.Body>
             <p>
