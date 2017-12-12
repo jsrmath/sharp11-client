@@ -4,7 +4,7 @@ var classNames = require('classnames');
 var Modal = require('react-bootstrap-modal');
 var Button = require('./Button.jsx');
 
-loadingChord = <div className="automatonItem" key="automaton-loading">
+var loadingChord = <div className="automatonItem" key="automaton-loading">
   <div className="automatonChord"><span>...</span></div>
   <div className="automatonState">Loading</div>
 </div>;
